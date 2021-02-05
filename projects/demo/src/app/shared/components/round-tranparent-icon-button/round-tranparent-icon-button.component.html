@@ -1,5 +1,5 @@
 <a (click)="click()">
-  <div class="container" [ngStyle]="isActive ? buttonStyle.active : {}">
+  <div class="button-container" [ngStyle]="isActive ? buttonStyle.active : {}">
     <fa-icon
       [icon]="isActive ? activeIcon : inactiveIcon"
       [styles]="isActive ? activeIconStyle : inactiveIconStyle"

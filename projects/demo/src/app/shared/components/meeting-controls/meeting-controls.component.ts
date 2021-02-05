@@ -1,6 +1,6 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
-import { faPhoneAlt, faVideo, faVideoSlash, faMicrophoneAlt, faMicrophoneAltSlash, faThumbtack } from '@fortawesome/free-solid-svg-icons';
+import { faPhoneAlt, faVideo, faVideoSlash, faMicrophoneAlt, faMicrophoneAltSlash, faThumbtack, faUser } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-meeting-controls',
@@ -14,6 +14,8 @@ export class MeetingControlsComponent implements OnInit {
   camIcon = faVideo;
   camOffIcon = faVideoSlash;
   pinIcon = faThumbtack;
+  userIcon = faUser;
+  @Input() title = '';
   @Output() micMuted = new EventEmitter<boolean>();
   @Output() cameraMuted = new EventEmitter<boolean>();
   @Output() hangedUp = new EventEmitter();

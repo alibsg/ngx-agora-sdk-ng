@@ -1,6 +1,11 @@
 /* You can add global styles to this file, and also import other style files */
 :root {
   --meeting-control-height: 5.5rem;
+  --meeting-control-height-sm-width: 3.5rem;
+  --width-sm: 576px;
+  --width-md: 768px;
+  --width-lg: 992px;
+  --width-xl: 1200px; 
 }
 
 app-meeting-page .controls-container {
@@ -10,3 +15,14 @@ app-meeting-page .controls-container {
 app-meeting-page .views-container {
   height: calc(100vh - var(--meeting-control-height));
 }
+
+@media only screen and (max-width: 576px) {
+  app-meeting-page .controls-container {
+    height: var(--meeting-control-height-sm-width);
+  }
+
+  app-meeting-page .views-container {
+    height: calc(100vh - var(--meeting-control-height-sm-width));
+  }
+}
+

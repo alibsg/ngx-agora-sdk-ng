@@ -1,21 +1,30 @@
-.container {
-    display: flex;
-    border: solid 2px white;
-    width: 3.5rem;
-    height: 3.5rem;
-    border-radius: 50%;
-    background-color: transparent;
-    overflow: hidden;
-    justify-content: center;
-    align-items: center;
-    transition: all .5s;
-    cursor: pointer;
+@import "../../../../styles.css";
+
+.button-container {
+  display: flex;
+  border: solid 2px white;
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 50%;
+  background-color: transparent;
+  overflow: hidden;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.5s;
+  cursor: pointer;
+}
+
+@media only screen and (max-width: 576px) {
+  .button-container {
+    width: 2rem;
+    height: 2rem;
+  }
 }
 
 .container:hover {
-    background-color: rgba(255,255,255, .65);
+  background-color: rgba(255, 255, 255, 0.65);
 }
 
 a {
-    cursor: pointer;
+  cursor: pointer;
 }

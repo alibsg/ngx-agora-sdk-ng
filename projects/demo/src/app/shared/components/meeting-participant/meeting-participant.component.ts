@@ -1,6 +1,5 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { faMicrophoneSlash } from '@fortawesome/free-solid-svg-icons';
-import { IMediaTrack, IRemoteAudioTrack, IRemoteVideoTrack } from 'ngx-agora-sdk-ng';
 
 import { IMeetingUser } from '../../../pages/meeting-page/meeting-page.component';
 import { IAgoraVideoPlayerTrackOption } from '../../directives/agora-video-player.directive';
@@ -8,7 +7,8 @@ import { IAgoraVideoPlayerTrackOption } from '../../directives/agora-video-playe
 @Component({
   selector: 'app-meeting-participant',
   templateUrl: './meeting-participant.component.html',
-  styleUrls: ['./meeting-participant.component.css']
+  styleUrls: ['./meeting-participant.component.css'],
+  changeDetection: ChangeDetectionStrategy.Default
 })
 export class MeetingParticipantComponent implements OnInit {
   @Output() pinned = new EventEmitter<IMeetingUser>();
@@ -23,14 +23,17 @@ export class MeetingParticipantComponent implements OnInit {
   @Input() set user(value: IMeetingUser) {
     this.myUser = value;
     if (value.type === 'remote') {
-      this.trackoptions = {
-        videoTrack: value.user?.videoTrack,
-        audioTrack: value.user?.audioTrack
-      };
-      this.micStatus = !!value.user?.hasAudio;
-      this.camStatus = !!value.user?.hasVideo;
-      if (value.user && value.user.audioTrack) {
-        this.audioStream = value.user?.audioTrack?.getMediaStream();
+      if (value.user) {
+        this.micStatus = !!value.user.hasAudio;
+        this.camStatus = !!value.user.hasVideo;
+        if (value.user.audioTrack && value.user.hasAudio) {
+          this.audioStream = value.user?.audioTrack?.getMediaStream();
+          const tracks = this.audioStream.getAudioTracks();
+        }
+        this.trackoptions = {
+          videoTrack: value.user.videoTrack,
+          audioTrack: value.user.audioTrack
+        };
       }
     }
     else {
@@ -48,7 +51,7 @@ export class MeetingParticipantComponent implements OnInit {
   }
 
   showControls(value: boolean): void {
-      this.controlsVisible = value;
+    this.controlsVisible = value;
   }
 
   isRemote(): boolean {

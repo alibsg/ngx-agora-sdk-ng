@@ -19,13 +19,10 @@
         </ng-container>
       </div>
     </ng-container>
-    <div class="meeting-description-container">
-      <h4>{{userList.length === 1 ?"You are alone here":"You and " + (userList.length - 1) + " user(s) are in meeting"}}
-      </h4>
-    </div>
   </div>
   <div class="controls-container">
     <app-meeting-controls (cameraMuted)="onLocalCamera($event)" (micMuted)="onLocalMic($event)"
-      (hangedUp)="onLocalLeave()" (pinned)="onLocalPinned($event)"></app-meeting-controls>
+      (hangedUp)="onLocalLeave()" (pinned)="onLocalPinned($event)" 
+      [title]="userList.length === 1 ? 'You are alone here': 'You and ' + (userList.length - 1) + ' user(s) are in meeting'"></app-meeting-controls>
   </div>
 </div>

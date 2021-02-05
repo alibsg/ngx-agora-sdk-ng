@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit } from '@angular/core';
 
 import { SoundMeter } from '../../../core/sound-meter';
 import { MediaService } from '../../services/media.service';
@@ -7,7 +7,8 @@ const bars = 4;
 @Component({
   selector: 'app-sound-visualizer',
   templateUrl: './sound-visualizer.component.html',
-  styleUrls: ['./sound-visualizer.component.css']
+  styleUrls: ['./sound-visualizer.component.css'],
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class SoundVisualizerComponent implements OnInit, OnDestroy {
   values = new Array<number>(bars);

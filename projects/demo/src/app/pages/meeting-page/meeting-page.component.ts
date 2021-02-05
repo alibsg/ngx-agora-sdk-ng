@@ -1,8 +1,9 @@
-import { ChangeDetectionStrategy, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { forkJoin, Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { IMediaTrack, IRemoteUser, NgxAgoraSdkNgService } from 'ngx-agora-sdk-ng';
+import { v4 as uuid4, v4 } from 'uuid';
 
 import { MediaService } from '../../shared/services/media.service';
 import { TokenService } from '../../shared/services/token.service';
@@ -18,6 +19,7 @@ export interface IMeetingUser {
   selector: 'app-meeting-page',
   templateUrl: './meeting-page.component.html',
   styleUrls: ['./meeting-page.component.css'],
+  changeDetection: ChangeDetectionStrategy.Default
 })
 export class MeetingPageComponent implements OnInit, OnDestroy {
   @ViewChild('localVideo', { static: true }) localVideo?: ElementRef;
@@ -33,6 +35,7 @@ export class MeetingPageComponent implements OnInit, OnDestroy {
   pinnedUser?: IMeetingUser | null;
 
   constructor(
+    // private changeDetactor: ChangeDetectorRef,
     private activatedRoute: ActivatedRoute,
     private agoraService: NgxAgoraSdkNgService,
     private mediaService: MediaService,
@@ -74,30 +77,19 @@ export class MeetingPageComponent implements OnInit, OnDestroy {
     this.subscriptions.push(tokenSub);
 
     const remoteUserLeaveSubs = this.agoraService.onRemoteUserLeft().subscribe(leftuser => {
-      this.userList = this.userList.filter(user => user.user?.uid !== leftuser.user.uid);
-      if (this.pinnedUser && this.pinnedUser.user?.uid && this.pinnedUser.user.uid === leftuser.user.uid) {
-        this.pinnedUser = null;
-      }
+      this.removeRemoteUser(leftuser.user.uid);
     });
     this.subscriptions.push(remoteUserLeaveSubs);
 
     const remoteUserChangeSubs = this.agoraService.onRemoteUsersStatusChange().subscribe(status => {
       switch (status.connectionState) {
         case 'CONNECTED':
-          if (!this.userList.find(user => user.user?.uid === status.user.uid)) {
-            this.userList.push({ type: 'remote', user: status.user });
-          }
+          this.addRemoteUser(status.user);
           break;
         case 'DISCONNECTED':
         case 'DISCONNECTING':
         case 'RECONNECTING':
-          const currentUserIndex = this.userList.findIndex(user => user.user?.uid === status.user.uid);
-          if (currentUserIndex >= 0) {
-            this.userList[currentUserIndex] = { type: 'remote', user: status.user };
-            if (this.pinnedUser && this.pinnedUser.user?.uid && this.pinnedUser.user.uid === status.user.uid) {
-              this.pinnedUser = { type: 'remote', user: status.user };
-            }
-          }
+          this.editRemoteUser(status.user);
           break;
       }
     });
@@ -119,6 +111,7 @@ export class MeetingPageComponent implements OnInit, OnDestroy {
     this.mediaTrack = await this.agoraService.join(this.channel, this.token)
       .WithCameraAndMicrophone(this.audioInId, this.videoInId)
       .Apply();
+    // this.changeDetactor.detectChanges();
   }
 
   onLocalMic(value: boolean): void {
@@ -160,6 +153,7 @@ export class MeetingPageComponent implements OnInit, OnDestroy {
     } else {
       this.pinnedUser = user;
     }
+    // this.changeDetactor.detectChanges();
   }
 
   getUnpinnedUsers(): IMeetingUser[] {
@@ -168,4 +162,31 @@ export class MeetingPageComponent implements OnInit, OnDestroy {
     }
     return this.userList.filter(user => user.user?.uid !== this.pinnedUser?.user?.uid);
   }
+
+  private removeRemoteUser(id: any): void {
+    this.userList = this.userList.filter(user => user.user?.uid !== id);
+    if (this.pinnedUser && this.pinnedUser.user?.uid && this.pinnedUser.user.uid === id) {
+      this.pinnedUser = null;
+    }
+    // this.changeDetactor.detectChanges();
+  }
+
+  private addRemoteUser(user: IRemoteUser): void {
+    if (!this.userList.find(luser => luser.user?.uid === user.uid)) {
+      this.userList.push({ type: 'remote', user });
+    }
+    // this.changeDetactor.detectChanges();
+  }
+
+  private editRemoteUser(user: IRemoteUser): void {
+    const currentUserIndex = this.userList.findIndex(luser => luser.user?.uid === user.uid);
+    if (currentUserIndex >= 0) {
+      this.userList[currentUserIndex] = { type: 'remote', user };
+      if (this.pinnedUser && this.pinnedUser.user?.uid && this.pinnedUser.user.uid === user.uid) {
+        this.pinnedUser = { type: 'remote', user };
+      }
+    }
+    // this.changeDetactor.detectChanges();
+  }
+
 }
